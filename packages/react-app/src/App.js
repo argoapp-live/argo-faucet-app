@@ -89,7 +89,7 @@ function App() {
           Edit <code>packages/react-app/src/App.js</code> and save to reload.
         </p>
         {/* Remove the "hidden" prop and open the JavaScript console in the browser to see what this function does */}
-        <Button hidden onClick={() => readOnChainData()}>
+        <Button hidden>
           Read On-Chain Balance
         </Button>
         <Link href="https://ethereum.org/developers/#getting-started" style={{ marginTop: "8px" }}>
