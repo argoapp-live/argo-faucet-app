@@ -43,11 +43,19 @@ function App() {
 
   async function faucetBalance() {
     const contract = await getErc20Contract(provider);
-    const wallet = await provider.eth.getAccounts();
     var balance = await contract.methods
       .balanceOf(addresses.faucet)
       .call();
     return provider.utils.fromWei(balance);
+
+  }
+  async function checkForUserStatus() {
+    const contract = await getFaucetContract(provider);
+    const wallet = await provider.eth.getAccounts();
+    var status = await contract.methods
+      .checkWithdraw(wallet[0])
+      .call();
+    return status;
 
   }
   async function userBalance() {
