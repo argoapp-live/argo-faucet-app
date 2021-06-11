@@ -9,8 +9,6 @@ import {
   DisclaimerMain,
   Title,
   SubTitle,
-  Text,
-  List,
   FloatingDiv,
   FloatingInnerDiv,
   FloatingInnerLink,
@@ -19,19 +17,11 @@ import {
   ClaimButton,
   ConnectButton,
   BadgeButton,
-  Bold,
-  AccordionDiv,
-  AccordionItemButtonDiv,
-  AccordionItemDiv,
-  FontAwesomeIconSet,
-  AccordionItemPanelDiv,
   TopHeader,
   ThanksHeading,
   TransactionHeading,
   MainHeader,
   MenuBar,
-  Line,
-  Note,
 } from "./components/styles";
 import logo from "./argoLogo.png";
 import disclaimerlogo from "./disclaimerLogo.png";
@@ -65,19 +55,19 @@ function WalletButton({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
 
 function App() {
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
-  const [claimAmount, setClaimAmount] = useState(0);
   const [claimLoading, setClaimLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
   const [chain, setChain] = useState(MATIC_CHAIN_ID);
   const [hash, setHash] = useState();
   const [isHashed, setIsHashed] = useState(false);
-  const [faucetAddress, setFaucetAddress] = useState("");
+  // const [faucetAddress, setFaucetAddress] = useState("");
   const [userAddress, setUserAddress] = useState("Please connect your wallet");
   const [userBal, setUserBal] = useState(0);
   const [userStatus, setUserStatus] = useState(true);
 
   async function getFaucetContract(web3) {
     const contract = new web3.eth.Contract(abis.faucet, addresses.faucet);
-    setFaucetAddress(addresses.faucet);
+    // setFaucetAddress(addresses.faucet);
     return contract;
   }
 
@@ -86,11 +76,11 @@ function App() {
     return contract;
   }
 
-  async function faucetBalance() {
-    const contract = await getErc20Contract(provider);
-    var balance = await contract.methods.balanceOf(addresses.faucet).call();
-    return provider.utils.fromWei(balance);
-  }
+  // async function faucetBalance() {
+  //   const contract = await getErc20Contract(provider);
+  //   var balance = await contract.methods.balanceOf(addresses.faucet).call();
+  //   return provider.utils.fromWei(balance);
+  // }
 
   async function checkForUserStatus() {
     const contract = await getFaucetContract(provider);
@@ -112,17 +102,20 @@ function App() {
   }
 
   async function getToken() {
+    setClaimLoading(true)
     const contract = await getFaucetContract(provider);
     const wallet = await provider.eth.getAccounts();
     var tx = await contract.methods
       .withdraw(addresses.erc20)
       .send({ from: wallet[0] });
     setHash(tx.transactionHash);
+    setClaimLoading(false)
     setIsHashed(true);
-    return tx.transactionHash;
+    setUserStatus(true);
   }
 
   async function loadData() {
+    setDataLoading(true)
     var add = await getUserAddress();
     var bal = await userBalance();
     var status = await checkForUserStatus();
@@ -132,6 +125,7 @@ function App() {
     setChain(chainId);
     setUserAddress(add);
     setUserBal(bal);
+    setDataLoading(false)
 
     // console.log("Status of the state: " + userStatus);
   }
@@ -193,23 +187,21 @@ function App() {
         <BodyMain>
           <Title>ArGo Faucet</Title>
           <SubTitle>
-            WE WOULD NEVER BE HERE WITHOUT YOU! THANKS FOR THE SUPPORT!!!
+            PLEASE CLAIM 50 $ARGO FROM MATIC TESTNET TO TEST OUR PLATFORM!!!
           </SubTitle>
         </BodyMain>
-        {userStatus && provider ? (
+        {userStatus && provider && !dataLoading ? (
           <DisclaimerMain>
             <div style={{ textAlign: "center" }}>
               <TransactionHeading>
-                <img src={disclaimerlogo} alt="❗" width="15" height="14" /> You have
-                already claimed token from this account
+                <img src={disclaimerlogo} alt="❗" width="15" height="14" /> You
+                have already claimed token from this account
               </TransactionHeading>
             </div>
           </DisclaimerMain>
-        ) : (
-          ""
-        )}
+        ) : null}
         <Main>
-          <ThanksHeading>Faucet</ThanksHeading>
+          <ThanksHeading>Matic Testnet Faucet</ThanksHeading>
           {provider ? (
             <div>
               <div class="user-item">
@@ -218,8 +210,8 @@ function App() {
                   <div class="user-item-body-var">{userAddress}</div>
                 </div>
                 <div class="user-item-body">
-                    <div class="user-item-body-static">Wallet Balance:</div>
-                    <div class="user-item-body-var">{userBal} ARGO</div>
+                  <div class="user-item-body-static">Wallet Balance:</div>
+                  <div class="user-item-body-var">{userBal} ARGO</div>
                 </div>
               </div>
             </div>
@@ -228,12 +220,13 @@ function App() {
           )}
           <div class="disclaimer" style={{ textAlign: "center" }}>
             <TransactionHeading>
-              <img src={disclaimerlogo} alt="❗" width="15" height="14" /> Disclaimer -
-              You can claim token from ArGo faucet only once per account
+              <img src={disclaimerlogo} alt="❗" width="15" height="14" />{" "}
+              Disclaimer - You can claim token from ArGo faucet only once per
+              account
             </TransactionHeading>
           </div>
           <div style={{ textAlign: "center" }}>
-            <ClaimButton onClick={getToken} disabled={chain !== 80001}>
+            <ClaimButton onClick={getToken} disabled={chain !== 80001 || provider && userStatus}>
               {!provider ? (
                 "Connect Wallet"
               ) : claimLoading ? (
