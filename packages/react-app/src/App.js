@@ -60,14 +60,12 @@ function App() {
   const [chain, setChain] = useState(MATIC_CHAIN_ID);
   const [hash, setHash] = useState();
   const [isHashed, setIsHashed] = useState(false);
-  // const [faucetAddress, setFaucetAddress] = useState("");
   const [userAddress, setUserAddress] = useState("Please connect your wallet");
   const [userBal, setUserBal] = useState(0);
   const [userStatus, setUserStatus] = useState(true);
 
   async function getFaucetContract(web3) {
     const contract = new web3.eth.Contract(abis.faucet, addresses.faucet);
-    // setFaucetAddress(addresses.faucet);
     return contract;
   }
 
@@ -75,12 +73,6 @@ function App() {
     const contract = new web3.eth.Contract(abis.erc20, addresses.erc20);
     return contract;
   }
-
-  // async function faucetBalance() {
-  //   const contract = await getErc20Contract(provider);
-  //   var balance = await contract.methods.balanceOf(addresses.faucet).call();
-  //   return provider.utils.fromWei(balance);
-  // }
 
   async function checkForUserStatus() {
     const contract = await getFaucetContract(provider);
@@ -102,20 +94,20 @@ function App() {
   }
 
   async function getToken() {
-    setClaimLoading(true)
+    setClaimLoading(true);
     const contract = await getFaucetContract(provider);
     const wallet = await provider.eth.getAccounts();
     var tx = await contract.methods
       .withdraw(addresses.erc20)
       .send({ from: wallet[0] });
     setHash(tx.transactionHash);
-    setClaimLoading(false)
+    setClaimLoading(false);
     setIsHashed(true);
     setUserStatus(true);
   }
 
   async function loadData() {
-    setDataLoading(true)
+    setDataLoading(true);
     var add = await getUserAddress();
     var bal = await userBalance();
     var status = await checkForUserStatus();
@@ -125,23 +117,14 @@ function App() {
     setChain(chainId);
     setUserAddress(add);
     setUserBal(bal);
-    setDataLoading(false)
-
-    // console.log("Status of the state: " + userStatus);
+    setDataLoading(false);
   }
 
   useEffect(() => {
     if (provider) {
       loadData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider]);
-
-  // const startup = async () => {
-  //   const claimableAmount = await airdropAmount();
-  //   console.log(claimableAmount);
-  //   setClaimAmount(Number.parseFloat(claimableAmount));
-  // };
 
   var hashLink = "https://explorer-mumbai.maticvigil.com/tx/" + hash;
 
@@ -226,7 +209,10 @@ function App() {
             </TransactionHeading>
           </div>
           <div style={{ textAlign: "center" }}>
-            <ClaimButton onClick={getToken} disabled={chain !== 80001 || provider && userStatus}>
+            <ClaimButton
+              onClick={getToken}
+              disabled={chain !== 80001 || (provider && userStatus)}
+            >
               {!provider ? (
                 "Connect Wallet"
               ) : claimLoading ? (
