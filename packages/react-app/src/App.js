@@ -170,7 +170,7 @@ function App() {
         <BodyMain>
           <Title>ArGo Faucet</Title>
           <SubTitle>
-            PLEASE CLAIM 50 $ARGO FROM MATIC TESTNET TO TEST OUR PLATFORM!!!
+            PLEASE CLAIM 80 $DAI FROM MATIC TESTNET TO TEST OUR PLATFORM!!!
           </SubTitle>
         </BodyMain>
         {userStatus && provider && !dataLoading ? (
@@ -194,7 +194,7 @@ function App() {
                 </div>
                 <div class="user-item-body">
                   <div class="user-item-body-static">Wallet Balance:</div>
-                  <div class="user-item-body-var">{userBal} ARGO</div>
+                  <div class="user-item-body-var">{userBal} DAI</div>
                 </div>
               </div>
             </div>
